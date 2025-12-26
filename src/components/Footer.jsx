@@ -21,7 +21,7 @@ const Footer = () => {
           <div>
             <span className="text-xl font-light tracking-tight text-gray-900">Viva Earth</span>
             <p className="mt-4 text-sm text-gray-600">
-              Purely Crafted by Nature, For You.
+              Purely Crafted by Nature. For You.
             </p>
           </div>
 
