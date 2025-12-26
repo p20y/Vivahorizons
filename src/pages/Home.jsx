@@ -291,10 +291,10 @@ const Home = () => {
               >
                 <h2 className="text-4xl font-light tracking-tight text-gray-900 mb-6">Curated with care</h2>
                 <p className="text-lg text-gray-600 mb-6">
-                  Every piece in our collection is carefully selected for its unique character, quality craftsmanship, and timeless design. We believe in bringing the warmth and authenticity of vintage decor into modern homes.
+                  Every product in our collection is thoughtfully chosen with intention and respect for nature. We focus on quality, integrity, and authenticity—selecting ingredients and formulations that feel timeless, purposeful, and true to their origins.
                 </p>
                 <p className="text-lg text-gray-600 mb-8">
-                  Based in Berlin, we source authentic midcentury modern, vintage, and retro pieces that tell a story and add personality to your space.
+                  Viva Earth brings together nature-inspired wellness essentials designed to support everyday rituals. Each offering reflects our belief that wellness should feel warm, grounded, and naturally integrated into modern living.
                 </p>
                 <Link to="/about">
                   <Button className="bg-gray-900 text-white hover:bg-gray-800 rounded-full px-8 py-6">
