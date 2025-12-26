@@ -118,7 +118,7 @@ const Home = () => {
                 transition={{ duration: 0.8 }}
               >
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-gray-900 mb-6">
-                  Purely Crafted by Nature. For You.
+                  Purely Crafted by Nature, For You.
                 </h1>
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
