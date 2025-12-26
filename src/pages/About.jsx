@@ -3,8 +3,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 const About = () => {
+  const [searchParams] = useSearchParams();
+  const isFeatureEnabled = searchParams.get('feature') === 'show';
   const teamMembers = [{
     name: 'Klaus',
     role: 'Founder & Curator',
@@ -95,33 +97,35 @@ Our approach begins with thoughtful sourcing and continues with a deep respect f
               </div>
             </section>
     
-            <section className="bg-gray-50 py-20">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center">
-                  <h2 className="text-4xl font-light text-gray-900">Meet the team</h2>
-                  <p className="mt-4 text-lg text-gray-600">The passionate individuals behind our collection.</p>
+            {isFeatureEnabled && (
+              <section className="bg-gray-50 py-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="text-center">
+                    <h2 className="text-4xl font-light text-gray-900">Meet the team</h2>
+                    <p className="mt-4 text-lg text-gray-600">The passionate individuals behind our collection.</p>
+                  </div>
+                  <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+                    {teamMembers.map((member, index) => <motion.div key={member.name} initial={{
+                opacity: 0,
+                y: 20
+              }} whileInView={{
+                opacity: 1,
+                y: 0
+              }} viewport={{
+                once: true
+              }} transition={{
+                duration: 0.6,
+                delay: index * 0.1
+              }} className="text-center">
+                        <img className="mx-auto h-40 w-40 rounded-full object-cover" src={member.image} alt={`Portrait of ${member.name}`} />
+                        <h3 className="mt-6 text-xl font-medium text-gray-900">{member.name}</h3>
+                        <p className="text-gray-600">{member.role}</p>
+                        <p className="mt-2 text-gray-500 max-w-xs mx-auto">{member.bio}</p>
+                      </motion.div>)}
+                  </div>
                 </div>
-                <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-                  {teamMembers.map((member, index) => <motion.div key={member.name} initial={{
-              opacity: 0,
-              y: 20
-            }} whileInView={{
-              opacity: 1,
-              y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
-              duration: 0.6,
-              delay: index * 0.1
-            }} className="text-center">
-                      <img className="mx-auto h-40 w-40 rounded-full object-cover" src={member.image} alt={`Portrait of ${member.name}`} />
-                      <h3 className="mt-6 text-xl font-medium text-gray-900">{member.name}</h3>
-                      <p className="text-gray-600">{member.role}</p>
-                      <p className="mt-2 text-gray-500 max-w-xs mx-auto">{member.bio}</p>
-                    </motion.div>)}
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
     
             <section className="py-20">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -130,11 +134,11 @@ Our approach begins with thoughtful sourcing and continues with a deep respect f
                   Ready to find your next treasure? Browse our collection or get in touch if you're looking for something specific. We're here to help you create the home of your dreams.
                 </p>
                 <div className="mt-8 flex justify-center gap-4">
-                  <Link to="/shop">
+                  <a href="https://www.amazon.com/s?k=Viva+Earth&ref=bl_dp_s_web_0" target="_blank" rel="noopener noreferrer">
                     <Button className="bg-gray-900 text-white hover:bg-gray-800 rounded-full px-8 py-3">
-                      Shop Now
+                      Shop Now on Amazon
                     </Button>
-                  </Link>
+                  </a>
                   <Link to="/contact">
                     <Button variant="outline" className="rounded-full px-8 py-3">
                       Contact Us

@@ -4,22 +4,24 @@ import { Instagram, Facebook, Twitter, Mail } from 'lucide-react';
 const Footer = () => {
   const location = useLocation();
   const handleShopLinkClick = e => {
-    if (location.pathname === '/shop') {
+    if (location.pathname === '/') {
+      // If already on home page, just scroll to featured collection
       e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      const featuredSection = document.getElementById('featured-collection');
+      if (featuredSection) {
+        featuredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
-    // If not on /shop, the Link component will handle navigation and ScrollToTop will trigger
+    // If not on home page, navigate to /#featured-collection
+    // The hash will be handled automatically by the browser
   };
   return <footer className="bg-gray-50 border-t border-gray-200 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <span className="text-xl font-light tracking-tight text-gray-900">Home decor</span>
+            <span className="text-xl font-light tracking-tight text-gray-900">Viva Earth</span>
             <p className="mt-4 text-sm text-gray-600">
-              Curated vintage home decor from Berlin.
+              Purely Crafted by Nature, For You.
             </p>
           </div>
 
@@ -29,16 +31,16 @@ const Footer = () => {
             </span>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link to="/shop" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">All products</Link>
+                <Link to="/#featured-collection" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">All products</Link>
               </li>
               <li>
-                <Link to="/shop" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">Furniture</Link>
+                <Link to="/#featured-collection" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">Essential Oils</Link>
               </li>
               <li>
-                <Link to="/shop" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">Lighting</Link>
+                <Link to="/#featured-collection" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">Carrier Oils</Link>
               </li>
               <li>
-                <Link to="/shop" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">Decor</Link>
+                <Link to="/#featured-collection" onClick={handleShopLinkClick} className="text-sm text-gray-600 hover:text-gray-900">Premium Quality Fragrance Oils</Link>
               </li>
             </ul>
           </div>

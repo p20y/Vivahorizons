@@ -1,19 +1,42 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Instagram, Facebook, Twitter, Menu, X } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Header = ({ setIsCartOpen }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { cartItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const isFeatureEnabled = searchParams.get('feature') === 'show';
+  const isHomePage = location.pathname === '/';
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleShopClick = (e) => {
+    // If feature is not "show", scroll to featured collection on home page
+    if (!isFeatureEnabled) {
+      e.preventDefault();
+      if (isHomePage) {
+        // We're already on home page, just scroll
+        const featuredSection = document.getElementById('featured-collection');
+        if (featuredSection) {
+          featuredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // We're on a different page, navigate to home with hash, then scroll
+        navigate('/', { state: { scrollToFeatured: true } });
+      }
+    }
+    // If feature is "show", let the default Link behavior handle navigation to /shop
+  };
+
   const navLinks = [
-    { path: '/shop', label: 'Shop' },
+    { path: '/shop', label: 'Shop', isShop: true },
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact' },
   ];
@@ -44,17 +67,32 @@ const Header = ({ setIsCartOpen }) => {
 
             <nav className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`text-sm font-medium transition-colors ${
-                    location.pathname === link.path
-                      ? 'text-gray-900'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {link.label}
-                </Link>
+                link.isShop ? (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={handleShopClick}
+                    className={`text-sm font-medium transition-colors ${
+                      location.pathname === link.path
+                        ? 'text-gray-900'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`text-sm font-medium transition-colors ${
+                      location.pathname === link.path
+                        ? 'text-gray-900'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
             </nav>
 
@@ -123,16 +161,30 @@ const Header = ({ setIsCartOpen }) => {
                 <ul className="space-y-2">
                   {navLinks.map((link) => (
                     <li key={link.path}>
-                      <Link
-                        to={link.path}
-                        className={`block w-full text-left px-4 py-3 text-lg font-medium rounded-lg ${
-                          location.pathname === link.path
-                            ? 'bg-gray-100 text-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50'
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
+                      {link.isShop ? (
+                        <Link
+                          to={link.path}
+                          onClick={handleShopClick}
+                          className={`block w-full text-left px-4 py-3 text-lg font-medium rounded-lg ${
+                            location.pathname === link.path
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <Link
+                          to={link.path}
+                          className={`block w-full text-left px-4 py-3 text-lg font-medium rounded-lg ${
+                            location.pathname === link.path
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

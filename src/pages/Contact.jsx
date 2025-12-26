@@ -40,8 +40,8 @@ const Contact = () => {
   }, {
     icon: MapPin,
     title: 'Address',
-    content: '8 The Green, #22847, Dover, DE 19901, USA',
-    link: 'https://maps.app.goo.gl/your-address-link-here' // Placeholder for an actual map link
+    content: 'Dolfyn Brand LLC\n8 The Green, #22847\nDover, DE 19901, USA',
+    link: null
   }];
   return <>
       <Helmet>
@@ -67,24 +67,44 @@ const Contact = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            {contactInfo.map((info, index) => <motion.a key={info.title} href={info.link} target="_blank" rel="noopener noreferrer" initial={{
-            opacity: 0,
-            y: 20
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            duration: 0.6,
-            delay: index * 0.1
-          }} className="flex flex-col items-center p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-900 text-white mb-4">
-                  <info.icon className="w-8 h-8" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {info.title}
-                </h3>
-                <p className="text-gray-600 text-center">{info.content}</p>
-              </motion.a>)}
+            {contactInfo.map((info, index) => {
+              const MotionComponent = info.link ? motion.a : motion.div;
+              const linkProps = info.link ? { href: info.link, target: '_blank', rel: 'noopener noreferrer' } : {};
+              return (
+                <MotionComponent
+                  key={info.title}
+                  {...linkProps}
+                  initial={{
+                    opacity: 0,
+                    y: 20
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1
+                  }}
+                  className={`flex flex-col items-center p-8 rounded-2xl bg-gray-50 ${info.link ? 'hover:bg-gray-100 transition-colors cursor-pointer' : ''}`}
+                >
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-900 text-white mb-4">
+                    <info.icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {info.title}
+                  </h3>
+                  {info.title === 'Address' ? (
+                    <div className="text-gray-600 text-center">
+                      <p className="font-bold">{info.content.split('\n')[0]}</p>
+                      <p>{info.content.split('\n').slice(1).join('\n')}</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-600 text-center whitespace-pre-line">{info.content}</p>
+                  )}
+                </MotionComponent>
+              );
+            })}
           </div>
 
           <motion.div initial={{

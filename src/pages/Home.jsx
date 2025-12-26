@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,25 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isFeatureEnabled = searchParams.get('feature') === 'show';
+
+  // Static images for featured collection
+  const featuredCollectionImages = [
+    '/images/Bergamot featured collection.png',
+    '/images/Frankincense featured collection.png',
+    '/images/jojoba oul featured collection.png',
+    '/images/Orange featured collection.jpg'
+  ];
+
+  // Title mappings for featured collection based on image index
+  const featuredCollectionTitles = [
+    'Bergamot Oil',
+    'Frankincense Oil',
+    'Jojoba Oil',
+    'Brazilian Orange Oil'
+  ];
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
@@ -53,15 +72,34 @@ const Home = () => {
     fetchFeaturedProducts();
   }, []);
 
+  // Handle scrolling to featured collection when navigating from other pages
+  useEffect(() => {
+    if (location.state?.scrollToFeatured || location.hash === '#featured-collection') {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        const featuredSection = document.getElementById('featured-collection');
+        if (featuredSection) {
+          featuredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      // Clear the state to prevent scrolling on subsequent renders
+      if (location.state?.scrollToFeatured) {
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [location.state, location.hash, navigate, location.pathname]);
+
   const handleSeeDetails = useCallback((e, product) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/product/${product.id}`, {
-      state: {
-        featuredImage: product.image
-      }
-    });
-  }, [navigate]);
+    if (isFeatureEnabled) {
+      navigate(`/product/${product.id}`, {
+        state: {
+          featuredImage: product.image
+        }
+      });
+    }
+  }, [navigate, isFeatureEnabled]);
 
   return (
     <>
@@ -90,12 +128,12 @@ const Home = () => {
                 >
                   Premium essential oils and natural wellness products, responsibly sourced and thoughtfully crafted to elevate everyday rituals.
                 </motion.p>
-                <Link to="/shop">
+                <a href="https://www.amazon.com/s?k=Viva+Earth&ref=bl_dp_s_web_0" target="_blank" rel="noopener noreferrer">
                   <Button className="bg-gray-900 text-white hover:bg-gray-800 rounded-full px-8 py-6 text-base">
                     Shop Now on Amazon
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
-                </Link>
+                </a>
               </motion.div>
 
               <motion.div
@@ -135,7 +173,7 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="py-20 bg-gray-50">
+        <section id="featured-collection" className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -161,9 +199,37 @@ const Home = () => {
             {!loading && !error && (
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10">
                 {featuredProducts.map((product, index) => {
-                  const displayVariant = product.variants[0];
-                  const hasSale = displayVariant && displayVariant.sale_price_in_cents !== null;
-                  const displayPrice = hasSale ? displayVariant.sale_price_formatted : displayVariant.price_formatted;
+                  const featuredImage = featuredCollectionImages[index] || product.image;
+                  // Use the title from the mapping array based on image index
+                  const displayTitle = featuredCollectionTitles[index] || product.title;
+
+                  const productContent = (
+                    <>
+                      <div className="relative overflow-hidden rounded-2xl mb-4 bg-gray-100 aspect-square">
+                        <img
+                          src={featuredImage}
+                          alt={displayTitle}
+                          className={`w-full h-full object-cover transition-transform duration-500 ${isFeatureEnabled ? 'group-hover:scale-105' : ''}`}
+                        />
+                        {isFeatureEnabled && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:hidden">
+                            <Button 
+                              onClick={(e) => handleSeeDetails(e, product)}
+                              className="bg-white text-gray-900 hover:bg-white/90 rounded-full px-6 py-3 shadow-lg transform group-hover:scale-100 scale-90 transition-transform"
+                              aria-label="See product details"
+                            >
+                              See Details
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-1 text-center">
+                        <h3 className="text-lg font-medium text-gray-900 truncate">
+                          {displayTitle}
+                        </h3>
+                      </div>
+                    </>
+                  );
 
                   return (
                     <motion.div
@@ -174,30 +240,15 @@ const Home = () => {
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       className="group"
                     >
-                      <Link to={`/product/${product.id}`} state={{ featuredImage: product.image }} className="block">
-                        <div className="relative overflow-hidden rounded-2xl mb-4 bg-gray-100 aspect-square">
-                          <img
-                            src={product.image}
-                            alt={product.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:hidden">
-                            <Button 
-                              onClick={(e) => handleSeeDetails(e, product)}
-                              className="bg-white text-gray-900 hover:bg-white/90 rounded-full px-6 py-3 shadow-lg transform group-hover:scale-100 scale-90 transition-transform"
-                              aria-label="See product details"
-                            >
-                              See Details
-                            </Button>
-                          </div>
+                      {isFeatureEnabled ? (
+                        <Link to={`/product/${product.id}`} state={{ featuredImage: product.image }} className="block cursor-pointer">
+                          {productContent}
+                        </Link>
+                      ) : (
+                        <div className="block cursor-default">
+                          {productContent}
                         </div>
-                        <div className="space-y-1 text-center">
-                          <h3 className="text-lg font-medium text-gray-900 truncate">
-                            {product.title}
-                          </h3>
-                          <p className="text-gray-900 font-medium">{displayPrice}</p>
-                        </div>
-                      </Link>
+                      )}
                     </motion.div>
                   );
                 })}
@@ -205,12 +256,12 @@ const Home = () => {
             )}
 
             <div className="text-center mt-12">
-              <Link to="/shop">
+              <a href="https://www.amazon.com/s?k=Viva+Earth&ref=bl_dp_s_web_0" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-gray-900 text-white hover:bg-gray-800 rounded-full px-8 py-6">
                   Shop Now on Amazon
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </section>
@@ -223,11 +274,12 @@ const Home = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
+                className="flex justify-start"
               >
                 <img
                   src="https://horizons-cdn.hostinger.com/3cba9943-6ccc-4d25-8e75-95aac06a5962/29f6edb8a28577efba10408cfb2e0b4a.jpg"
                   alt="Four bottles of Viva Earth carrier oils (Jojoba, Castor, Moroccan Argan, Rosehip) with a message to try premium carrier oils for all your needs"
-                  className="w-full h-[500px] object-cover rounded-2xl"
+                  className="w-auto max-w-full h-[500px] object-cover rounded-2xl object-left"
                 />
               </motion.div>
 
