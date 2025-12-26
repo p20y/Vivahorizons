@@ -40,7 +40,7 @@ const Contact = () => {
   }, {
     icon: MapPin,
     title: 'Address',
-    content: 'Dolfyn Brand LLC\n8 The Green, #22847\nDover, DE 19901, USA',
+    content: 'Dolfyn Brands LLC\n8 The Green, #22847\nDover, DE 19901, USA',
     link: null
   }];
   return <>
